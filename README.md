@@ -29,3 +29,5 @@ hdfs dfs -put <filename> /
 
 Spark Jobs listed at http://<namenode_IP>:4040/jobs/
 Update Spark config at `spark-2.2.0-bin-hadoop2.7/conf/spark-env.sh` to update hadoop directory location using `export HADOOP_CONF_DIR="/users/chakshu/hadoop-2.7.6/etc/hadoop/"`
+
+Trying running the Scala program using `spark-shell -i <program_name>.sc`
