@@ -18,15 +18,14 @@ For example, copying `hadoop-env.sh` from master node to all slave nodes
 parallel-scp -h slaves hadoop-env.sh ~/hadoop-2.7.6/etc/hadoop/hadoop-env.sh
 ```
 
-## Spark
-
-Spark Jobs listed at http://<namenode_IP>:4040/jobs/
-
 
 In HDFS Cluster,
 
 Checking status of HDFS Cluster : http://<namenode_IP>:50070/dfshealth.html#tab-overview
-
 ```
 hdfs dfs -put <filename> /
 ```
+## Spark
+
+Spark Jobs listed at http://<namenode_IP>:4040/jobs/
+Update Spark config at `spark-2.2.0-bin-hadoop2.7/conf/spark-env.sh` to update hadoop directory location using `export HADOOP_CONF_DIR="/users/chakshu/hadoop-2.7.6/etc/hadoop/"`
