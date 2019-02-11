@@ -4,9 +4,6 @@ val links = mydata.map( x => x.split("\\t"))
 val mappedlinks = links.map(x => (x(0), x(1))).persist()
 mappedlinks.take(10).foreach(println)
 
-# var disturls = mappedlinks.keys.distinct()
-# var ranks = disturls.map( x => (x,1) )
-
 var rankswithsize = sc.parallelize(mappedlinks.countByKey().toSeq)
 rankswithsize.persist()
 var ranksserial = rankswithsize.map{ case(key, value) => (key, (1.0, value)) }
