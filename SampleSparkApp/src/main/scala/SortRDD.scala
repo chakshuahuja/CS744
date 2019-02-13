@@ -1,7 +1,7 @@
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
-class SortRDD {
+object SortRDD {
   def main(args: Array[String]): Unit = {
     if (args.length<2) {
       println("""Please pass two arguments for (1) Input File Path and (2) Output File Path. All files are on HDFS""")

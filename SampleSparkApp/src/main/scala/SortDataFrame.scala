@@ -1,6 +1,6 @@
 import org.apache.spark.{SparkConf, SparkContext}
 
-class SortDataFrame {
+object SortDataFrame {
   def main(args: Array[String]): Unit = {
     if (args.length<2) {
       println("""Please pass two arguments for (1) Input File Path and (2) Output File Path. All files are on HDFS""")
