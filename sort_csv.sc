@@ -1,8 +1,8 @@
-// Using RDDs API
+val inputFilename = sc.getConf.get("spark.app.inputFile", "/export.csv")
+val outputFilename = sc.getConf.get("spark.app.outputFile", "/sortedexport")
 
-val myRDD = sc.textFile("/export.csv")
-val dataRDD = myRDD.mapPartitionsWithIndex {case (i, iter) => if (i ==0) iter.drop(1) else iter }
-val sortedRDD = dataRDD.sortBy(x => (x.split(",")(2), x.split(",")(14)))
-sortedRDD.collect.foreach(println)
-sortedRDD.coalesce(1, true).saveAsTextFile("/rdsortedinfile.csv")
+val inputDF = spark.read.option("header", true).option("inferSchema", true).csv(inputFilename)
+val outputDF = inputDF.sort("cca2", "timestamp")
+outputDF.repartition(1).write.mode("overwrite").option("header", true).csv(outputFilename)
 
+System.exit(0)
