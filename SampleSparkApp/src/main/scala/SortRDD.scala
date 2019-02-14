@@ -1,5 +1,4 @@
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions._
+import org.apache.spark.{SparkConf, SparkContext}
 
 object SortRDD {
   def main(args: Array[String]): Unit = {
@@ -11,10 +10,14 @@ object SortRDD {
   }
 
   def sortDataSet(inputFile:String, outputFile:String): Unit = {
-    val spark = SparkSession.builder().appName("SampleDataSortApp").getOrCreate
-    val df = spark.read.format("csv").option("header", "true").load(inputFile)
-    val sortedDF = df.sort(asc("cca2"), asc("timestamp"))
-    sortedDF.coalesce(1).write.option("header", "true").csv(outputFile)
+    val conf = new SparkConf()
+    val sc = new SparkContext(conf)
+
+    val csvData = sc.textFile(inputFile)
+    val data = csvData.mapPartitionsWithIndex { (idx, iter) => if (idx == 0) iter.drop(1) else iter }
+    val sortedRDD = data.sortBy(x => (x.split(",")(2), x.split(",")(14)))
+    sortedRDD.collect.foreach(println)
+    sortedRDD.coalesce(1, true).saveAsTextFile(outputFile)
     println(s"Output of sorted DataSet can be found on HDFS here: $outputFile")
   }
 }

@@ -17,7 +17,7 @@ object PageRankNaive {
       println("Directory not present in HDFS. Please enter valid directory")
       System.exit(0)
     }
-    val conf = new SparkConf().setAppName("SampleDataSortApp").setMaster("local")
+    val conf = new SparkConf()
     val sc = new SparkContext(conf)
 
     val nIterations = 10
@@ -33,7 +33,7 @@ object PageRankNaive {
     val cleanData = data.filter(!_.startsWith("#"))
       .map(x => x.toLowerCase()).filter { x =>
       val pair = x.trim().split("\\t+")
-      pair.size == 2 && (!pair.last.contains(":") || pair.last.startsWith("category:"))
+      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:"))
     }
 
     val edges = cleanData
