@@ -1,18 +1,18 @@
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.{HashPartitioner, SparkConf, SparkContext}
+import org.apache.spark.RangePartitioner
 import utility.Utility
 
-object PageRankCached {
+object PageRankRangePartition {
   def main(args: Array[String]): Unit = {
     if (args.length < 1) {
-      println("""Please pass two arguments for (1) Input File Directory (2) Output File Path. All files are on HDFS""")
+      println("""Please pass argument for (1) Output File Path. All files are on HDFS""")
       System.exit(0)
     }
-    PageRank(args(0),args(1))
+    PageRank(args(0), args(1), args(2).toInt)
   }
 
-
-  def PageRank(inputFileDir:String, outputFile: String) {
+  def PageRank(inputFileDir: String, outputFile: String, noPartitions: Int) {
     if (!(new Utility).InputFileDirInHDFS(inputFileDir)) {
       println("Directory not present in HDFS. Please enter valid directory")
       System.exit(0)
@@ -31,20 +31,20 @@ object PageRankCached {
     if (IgnoreZeroIncoming)
       println("INFO: Will only compute ranks of nodes which had incoming urls")
 
-    val data = sc.textFile(inputFileDir+"/*")
+    val data = sc.textFile(inputFileDir +"/*")
     val cleanData = data.filter(!_.startsWith("#"))
       .map(x => x.toLowerCase()).filter { x =>
       val pair = x.trim().split("\\t+")
       pair.size == 2 && (!pair.last.contains(":") || pair.last.startsWith("category:"))
     }
 
-    val edges = cleanData
+    val nonPartitionedEdges = cleanData
       .map(line => line.split("\\t+"))
       .map(_.map(_.trim))
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
       .map(l => l(0) -> l(1))
-      .partitionBy(new HashPartitioner(150))
+    val edges = nonPartitionedEdges.partitionBy(new RangePartitioner(noPartitions, nonPartitionedEdges))
 
     val graph = edges.groupByKey()
     val initialRanks = graph.mapValues(_ => 1.0)
@@ -71,7 +71,4 @@ object PageRankCached {
 
     finalRanks.coalesce(1, true).saveAsTextFile(outputFile)
   }
-
 }
-
-

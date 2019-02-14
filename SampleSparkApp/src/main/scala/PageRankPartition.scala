@@ -1,17 +1,24 @@
 import org.apache.spark.rdd.RDD
-import org.apache.spark.HashPartitioner
+import org.apache.spark.{HashPartitioner, SparkConf, SparkContext}
 import utility.Utility
 
 object PageRankPartition {
   def main(args: Array[String]): Unit = {
     if (args.length < 1) {
-      println("""Please pass argument for (1) Output File Path. All files are on HDFS""")
+      println("""Please pass three arguments for (1) Input File Directory (2) Output File Path and (3) Number Of Partitions. All files are on HDFS""")
       System.exit(0)
     }
-    PageRank(args(0))
+    PageRank(args(0), args(1), args(2).toInt)
   }
 
-  def PageRank(outputFile: String) {
+  def PageRank(inputFileDir:String, outputFile: String, partitions:Int) {
+    if (!(new Utility).InputFileDirInHDFS(inputFileDir)) {
+      println("Directory not present in HDFS. Please enter valid directory")
+      System.exit(0)
+    }
+
+    val conf = new SparkConf().setAppName("SampleDataSortApp").setMaster("local")
+    val sc = new SparkContext(conf)
 
     val nIterations = 10
     val OnlyLeft = true // Only give rank of nodes appearing on left side
@@ -23,7 +30,7 @@ object PageRankPartition {
     if (IgnoreZeroIncoming)
       println("INFO: Will only compute ranks of nodes which had incoming urls")
 
-    val data = (new Utility).EnWikiData.rdd
+    val data = sc.textFile(inputFileDir+"/*")
     val cleanData = data.filter(!_.startsWith("#"))
       .map(x => x.toLowerCase()).filter { x =>
       val pair = x.trim().split("\\t+")
@@ -36,7 +43,7 @@ object PageRankPartition {
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
       .map(l => l(0) -> l(1))
-      .partitionBy(new HashPartitioner(150))
+      .partitionBy(new HashPartitioner(partitions))
 
     val graph = edges.groupByKey()
     val initialRanks = graph.mapValues(_ => 1.0)

@@ -1,7 +1,14 @@
 package utility
 
+import java.net.URI
+
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.Path
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD
+import java.net._
+
+import scala.collection.mutable.ListBuffer
 
 class Utility {
   abstract class Data {
@@ -34,5 +41,17 @@ class Utility {
 
   object WebData extends Data {
     val fileNames = Seq("/web-BerkStan.txt")
+  }
+
+
+  def InputFileDirInHDFS(inputFileDir:String):Boolean = {
+    val fs = org.apache.hadoop.fs.FileSystem.get(new URI("hdfs://"+InetAddress.getLocalHost.getHostAddress+":9000"),new Configuration())
+    val dirPath = new Path(inputFileDir)
+    var temp = new ListBuffer[String]()
+    if(fs.exists(dirPath) && fs.isDirectory(dirPath)) {
+      true
+    } else {
+      false
+    }
   }
 }

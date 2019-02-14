@@ -1,18 +1,26 @@
 import org.apache.spark.rdd.RDD
-import org.apache.spark.HashPartitioner
+import org.apache.spark.{HashPartitioner, SparkConf, SparkContext}
 import utility.Utility
 
 
 object PageRankGraph {
   def main(args: Array[String]): Unit = {
     if (args.length < 1) {
-      println("""Please pass argument for (1) Output File Path. All files are on HDFS""")
+      println("""Please pass two arguments for (1) Input File Directory (2) Output File Path. All files are on HDFS""")
       System.exit(0)
     }
-    PageRank(args(0))
+    PageRank(args(0), args(1))
   }
 
-  def PageRank(outputFile: String) {
+  def PageRank(inputFileDir:String, outputFile: String) {
+    if (!(new Utility).InputFileDirInHDFS(inputFileDir)) {
+      println("Directory not present in HDFS. Please enter valid directory")
+      System.exit(0)
+    }
+
+    val conf = new SparkConf().setAppName("SampleDataSortApp").setMaster("local")
+    val sc = new SparkContext(conf)
+
     val nIterations = 10
     val OnlyLeft = true // Only give rank of nodes appearing on left side
     val IgnoreZeroIncoming = true // Only give ranks of nodes that have atleast one incoming Url
@@ -22,7 +30,7 @@ object PageRankGraph {
     if (IgnoreZeroIncoming)
       println("INFO: Will only compute ranks of nodes which had incoming urls")
 
-    val data = (new Utility).EnWikiData.rdd
+    val data = sc.textFile(inputFileDir+"/*")
     val cleanData = data.filter(!_.startsWith("#"))
       .map(x => x.toLowerCase()).filter { x =>
       val pair = x.trim().split("\\t+")
