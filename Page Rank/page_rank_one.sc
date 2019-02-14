@@ -49,10 +49,11 @@ object PageRank {
 
     val edges = cleandata
         .map( line => line.split("\t", 2))
-	      .map(_.map(_.trim))
-	      .map(_.filter(_.nonEmpty))
-        .filter(l => l.size == 2 && (!l(1).contains(":") || l(1).startsWith("category:")))
-	      .map(l => l(0) ->  l(1))
+	.map(_.map(_.trim))
+	.map(_.filter(_.nonEmpty))
+        .filter(_.size == 2)
+        .filter(_.forall(x => !x.contains(":") || x.startsWith("category:")))
+	.map(l => l(0) ->  l(1))
 					
     val nNeighbours: RDD[(String, Int)] = edges
               .map{ case(s, _) => (s, 1) }

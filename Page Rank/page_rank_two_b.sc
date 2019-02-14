@@ -51,7 +51,8 @@ object PageRank {
         .map( line => line.split("\t", 2))
         .map(_.map(_.trim))
         .map(_.filter(_.nonEmpty))
-        .filter(l => l.size == 2 && (!l(1).contains(":") || l(1).startsWith("category:")))
+        .filter(_.size == 2)
+        .filter(_.forall(x => !x.contains(":") || x.startsWith("category:")))
         .map(l => l(0) ->  l(1))
         .partitionBy(new HashPartitioner(150))
 
