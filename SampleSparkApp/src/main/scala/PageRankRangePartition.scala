@@ -33,16 +33,14 @@ object PageRankRangePartition {
 
     val data = sc.textFile(inputFileDir +"/*")
     val cleanData = data.filter(!_.startsWith("#"))
-      .map(x => x.toLowerCase()).filter { x =>
-      val pair = x.trim().split("\\t+")
-      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:"))
-    }
 
     val nonPartitionedEdges = cleanData
       .map(line => line.split("\\t+"))
       .map(_.map(_.trim))
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
+      .map(_.map(_.toLowerCase()))
+      .filter(_.forall(x => !x.contains(":") || x.startsWith("category:")))
       .map(l => l(0) -> l(1))
     val edges = nonPartitionedEdges.partitionBy(new RangePartitioner(noPartitions, nonPartitionedEdges))
 
