@@ -43,9 +43,8 @@ object PageRankPartition {
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
       .map(l => l(0) -> l(1))
-      .partitionBy(new HashPartitioner(partitions))
 
-    val graph = edges.groupByKey()
+    val graph = edges.groupByKey().partitionBy(new HashPartitioner(partitions))
     val initialRanks = graph.mapValues(_ => 1.0)
 
     def newRanks(graph: RDD[(String, Iterable[String])], prevRanks: RDD[(String, Double)]): RDD[(String, Double)] = {
