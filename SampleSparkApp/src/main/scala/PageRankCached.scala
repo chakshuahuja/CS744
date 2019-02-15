@@ -4,15 +4,14 @@ import utility.Utility
 
 object PageRankCached {
   def main(args: Array[String]): Unit = {
-    if (args.length < 1) {
-      println("""Please pass two arguments for (1) Input File Directory (2) Output File Path. All files are on HDFS""")
+    if (args.length < 2) {
+      println("""Please pass three arguments for (1) Input File Directory (2) Output File Path and (3) Number Of Partitions. All files are on HDFS""")
       System.exit(0)
     }
-    PageRank(args(0),args(1))
+    PageRank(args(0), args(1), args(2).toInt)
   }
 
-
-  def PageRank(inputFileDir:String, outputFile: String) {
+  def PageRank(inputFileDir:String, outputFile: String, partitions:Int) {
     if (!(new Utility).InputFileDirInHDFS(inputFileDir)) {
       println("Directory not present in HDFS. Please enter valid directory")
       System.exit(0)
@@ -35,7 +34,7 @@ object PageRankCached {
     val cleanData = data.filter(!_.startsWith("#"))
       .map(x => x.toLowerCase()).filter { x =>
       val pair = x.trim().split("\\t+")
-      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:"))
+      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:")))
     }
 
     val edges = cleanData
@@ -44,9 +43,8 @@ object PageRankCached {
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
       .map(l => l(0) -> l(1))
-      .partitionBy(new HashPartitioner(150))
 
-    val graph = edges.groupByKey()
+    val graph = edges.groupByKey().partitionBy(new HashPartitioner(partitions)).cache()
     val initialRanks = graph.mapValues(_ => 1.0)
 
     def newRanks(graph: RDD[(String, Iterable[String])], prevRanks: RDD[(String, Double)]): RDD[(String, Double)] = {
@@ -71,7 +69,6 @@ object PageRankCached {
 
     finalRanks.coalesce(1, true).saveAsTextFile(outputFile)
   }
-
 }
 
 
