@@ -4,20 +4,15 @@ import utility.Utility
 
 object PageRankCached {
   def main(args: Array[String]): Unit = {
-    if (args.length < 1) {
+    if (args.length < 3) {
       println("""Please pass two arguments for (1) Input File Directory (2) Output File Path. All files are on HDFS""")
       System.exit(0)
     }
-    PageRank(args(0),args(1))
+    PageRank(args(0), args(1), args(2).toInt)
   }
 
 
-  def PageRank(inputFileDir:String, outputFile: String) {
-    if (!(new Utility).InputFileDirInHDFS(inputFileDir)) {
-      println("Directory not present in HDFS. Please enter valid directory")
-      System.exit(0)
-    }
-
+  def PageRank(inputFileDir:String, outputFile: String, partitions: Int) {
     val conf = new SparkConf()
     val sc = new SparkContext(conf)
 
@@ -31,11 +26,11 @@ object PageRankCached {
     if (IgnoreZeroIncoming)
       println("INFO: Will only compute ranks of nodes which had incoming urls")
 
-    val data = sc.textFile(inputFileDir+"/*")
+    val data = sc.textFile(inputFileDir)
     val cleanData = data.filter(!_.startsWith("#"))
       .map(x => x.toLowerCase()).filter { x =>
       val pair = x.trim().split("\\t+")
-      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:"))
+      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:")))
     }
 
     val edges = cleanData
@@ -44,9 +39,8 @@ object PageRankCached {
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
       .map(l => l(0) -> l(1))
-      .partitionBy(new HashPartitioner(150))
 
-    val graph = edges.groupByKey()
+    val graph = edges.groupByKey().partitionBy(new HashPartitioner(partitions)).cache()
     val initialRanks = graph.mapValues(_ => 1.0)
 
     def newRanks(graph: RDD[(String, Iterable[String])], prevRanks: RDD[(String, Double)]): RDD[(String, Double)] = {

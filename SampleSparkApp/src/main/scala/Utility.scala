@@ -54,4 +54,15 @@ class Utility {
       false
     }
   }
+
+  def InputFileInHDFS(inputFile:String):Boolean = {
+    val fs = org.apache.hadoop.fs.FileSystem.get(new URI("hdfs://"+InetAddress.getLocalHost.getHostAddress+":9000"),new Configuration())
+    val filePath = new Path(inputFile)
+    var temp = new ListBuffer[String]()
+    if(fs.exists(filePath) && fs.isFile(filePath)) {
+      true
+    } else {
+      false
+    }
+  }
 }

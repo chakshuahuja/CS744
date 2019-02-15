@@ -16,7 +16,6 @@ object SortRDD {
     val csvData = sc.textFile(inputFile)
     val data = csvData.mapPartitionsWithIndex { (idx, iter) => if (idx == 0) iter.drop(1) else iter }
     val sortedRDD = data.sortBy(x => (x.split(",")(2), x.split(",")(14)))
-    sortedRDD.collect.foreach(println)
     sortedRDD.coalesce(1, true).saveAsTextFile(outputFile)
     println(s"Output of sorted DataSet can be found on HDFS here: $outputFile")
   }

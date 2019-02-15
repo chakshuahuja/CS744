@@ -13,11 +13,6 @@ object PageRankGraph {
   }
 
   def PageRank(inputFileDir:String, outputFile: String) {
-    if (!(new Utility).InputFileDirInHDFS(inputFileDir)) {
-      println("Directory not present in HDFS. Please enter valid directory")
-      System.exit(0)
-    }
-
     val conf = new SparkConf()
     val sc = new SparkContext(conf)
 
@@ -30,11 +25,11 @@ object PageRankGraph {
     if (IgnoreZeroIncoming)
       println("INFO: Will only compute ranks of nodes which had incoming urls")
 
-    val data = sc.textFile(inputFileDir+"/*")
+    val data = sc.textFile(inputFileDir)
     val cleanData = data.filter(!_.startsWith("#"))
       .map(x => x.toLowerCase()).filter { x =>
       val pair = x.trim().split("\\t+")
-      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:"))
+      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:")))
     }
 
     val edges = cleanData
