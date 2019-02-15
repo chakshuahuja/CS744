@@ -26,11 +26,7 @@ object PageRankPartition {
 
     val data = sc.textFile(inputFileDir)
     val cleanData = data.filter(!_.startsWith("#"))
-      .map(x => x.toLowerCase()).filter { x =>
-      val pair = x.trim().split("\\t+")
-      pair.size == 2 && (!pair(0).contains(":") || pair(0).startsWith("category:") && (!pair(1).contains(":") || pair(1).startsWith("category:")))
-    }
-
+    
     val edges = cleanData
       .map(line => line.split("\\t+"))
       .map(_.map(_.trim))
