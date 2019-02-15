@@ -5,14 +5,14 @@ import utility.Utility
 object PageRankCached {
   def main(args: Array[String]): Unit = {
     if (args.length < 3) {
-      println("""Please pass two arguments for (1) Input File Directory (2) Output File Path. All files are on HDFS""")
+      println("""Please pass three arguments for (1) Input File Directory (2) Output File Path and (3) Number Of Partitions. All files are on HDFS""")
       System.exit(0)
     }
     PageRank(args(0), args(1), args(2).toInt)
   }
 
 
-  def PageRank(inputFileDir:String, outputFile: String, partitions: Int) {
+  def PageRank(inputFileDir:String, outputFile: String, partitions:Int) {
     val conf = new SparkConf()
     val sc = new SparkContext(conf)
 
@@ -38,6 +38,8 @@ object PageRankCached {
       .map(_.map(_.trim))
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
+      .map(_.map(_.toLowerCase()))
+      .filter(_.forall(x => !x.contains(":") || x.startsWith("category:")))
       .map(l => l(0) -> l(1))
 
     val graph = edges.groupByKey().partitionBy(new HashPartitioner(partitions)).cache()
@@ -65,7 +67,6 @@ object PageRankCached {
 
     finalRanks.coalesce(1, true).saveAsTextFile(outputFile)
   }
-
 }
 
 
