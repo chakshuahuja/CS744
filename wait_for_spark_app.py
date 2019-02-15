@@ -1,7 +1,7 @@
 from urllib import request
 import json
 
-import subprocess, requests
+import subprocess, sys
 
 ip_address = subprocess.check_output('hostname -i', shell=True).decode('utf-8').strip()
 api_url = "http://" + ip_address + ":4040/api/v1/applications/"
@@ -9,7 +9,11 @@ api_url = "http://" + ip_address + ":4040/api/v1/applications/"
 WAIT_PERCENTAGE = 50.0
 
 def get_json_from_url(url):
-  return json.loads(request.urlopen(url).read())
+  try: return json.loads(request.urlopen(url).read().decode('utf-8'))
+  except Exception as e:
+    print('Could not find the object. Make sure you spark session is running and Try Again !')
+    sys.exit(1)
+
 apps = get_json_from_url(api_url)
 app = apps[0]
 app_id = app['id']
