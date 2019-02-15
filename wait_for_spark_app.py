@@ -1,9 +1,13 @@
 from urllib import request
 import json
 
+import subprocess, requests
+
+ip_address = subprocess.check_output('hostname -i', shell=True).decode('utf-8').strip()
+api_url = "http://" + ip_address + ":4040/api/v1/applications/"
+
 WAIT_PERCENTAGE = 50.0
 
-api_url = "http://128.104.223.139:4040/api/v1/applications/"
 def get_json_from_url(url):
   return json.loads(request.urlopen(url).read())
 apps = get_json_from_url(api_url)
