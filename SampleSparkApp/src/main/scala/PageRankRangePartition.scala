@@ -43,6 +43,8 @@ object PageRankRangePartition {
       .map(_.map(_.trim))
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
+      .map(_.map(_.toLowerCase()))
+      .filter(_.forall(x => !x.contains(":") || x.startsWith("category:")))
       .map(l => l(0) -> l(1))
     val edges = nonPartitionedEdges.partitionBy(new RangePartitioner(noPartitions, nonPartitionedEdges))
 

@@ -41,6 +41,8 @@ object PageRankNaive {
       .map(_.map(_.trim))
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
+      .map(_.map(_.toLowerCase()))
+      .filter(_.forall(x => !x.contains(":") || x.startsWith("category:")))
       .map(l => l(0) -> l(1))
 
     val nNeighbours: RDD[(String, Int)] = edges

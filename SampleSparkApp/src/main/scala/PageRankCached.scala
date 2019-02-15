@@ -42,6 +42,8 @@ object PageRankCached {
       .map(_.map(_.trim))
       .map(_.filter(_.nonEmpty))
       .filter(_.length == 2)
+      .map(_.map(_.toLowerCase()))
+      .filter(_.forall(x => !x.contains(":") || x.startsWith("category:")))
       .map(l => l(0) -> l(1))
 
     val graph = edges.groupByKey().partitionBy(new HashPartitioner(partitions)).cache()
