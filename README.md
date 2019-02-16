@@ -57,6 +57,7 @@ Output: CSV File containing sorted(by country and timestamp) records.
     where
     - `<PATH_TO_SPARK_BIN_DIRECTORY>` is the location of Spark bin directory in your machine (would be mostly be `~/spark-2.2.0-bin-hadoop2.7/bin/`),
     - `<HOST_IP>` is the hostname of the `Master` node and you can find in your current machine by running `hostname -i` and
+    - `target/scala-2.11/samplespark_2.11-1.0.jar` is the path to jar file
     - `hdfs://<HOST_IP>:9000/export.csv` is the location of input csv file on the HDFS
     - `hdfs://<HOST_IP>:9000/dfSortDataSetResult` is the output file name (can be anything of your choice)
 
