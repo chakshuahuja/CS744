@@ -63,12 +63,12 @@ Output: CSV File containing sorted(by country and timestamp) records.
 
     Running the following command would execute the application:
     ```
-    <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortDataFrame" --master spark://<HOST_IP>:7077 target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/dfSortDataSetResult --driver-memory 8G --executor-memory 8G
+    <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortDataFrame" --master spark://<HOST_IP>:7077 target/scala-2.11/sortapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/dfSortDataSetResult --driver-memory 8G --executor-memory 8G
     ```
     where
     - `<PATH_TO_SPARK_BIN_DIRECTORY>` is the location of Spark bin directory in your machine (would be mostly be `~/spark-2.2.0-bin-hadoop2.7/bin/`),
     - `<HOST_IP>` is the hostname of the `Master` node and you can find in your current machine by running `hostname -i` and
-    - `target/scala-2.11/samplespark_2.11-1.0.jar` is the path to jar file
+    - `target/scala-2.11/sortapp_2.11-1.0.jar` is the path to jar file
     - `hdfs://<HOST_IP>:9000/export.csv` is the location of input csv file on the HDFS
     - `hdfs://<HOST_IP>:9000/dfSortDataSetResult` is the output file name (can be anything of your choice)
 
@@ -84,7 +84,7 @@ Output: CSV File containing sorted(by country and timestamp) records.
 
     Running the following command would execute the application:
     ```
-    <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortRDD" --master spark://<HOST_IP>:7077 target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/rddSortDataSetResult --driver-memory 8G --executor-memory 8G
+    <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortRDD" --master spark://<HOST_IP>:7077 target/scala-2.11/sortapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/rddSortDataSetResult --driver-memory 8G --executor-memory 8G
     ```
 
 ########################################################## Part 3 ##################################################################################33
@@ -102,7 +102,7 @@ inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>
 Example: bash run_naive.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_naive
 
 Run using command:
-<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankNaive" --master spark://<HOST_IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<ip_address>:9000/naivePageRankResult --driver-memory 8G --executor-memory 8G
+<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankNaive" --master spark://<HOST_IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<ip_address>:9000/naivePageRankResult --driver-memory 8G --executor-memory 8G
 ```
 ########################################################## Partition Based
 ```
@@ -111,7 +111,7 @@ inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>
 Example: bash run_partition.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_partition 30
 
 Run using command:
-<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankPartition" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/partitionPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
+<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankPartition" --master spark://<host IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/partitionPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 ########################################################## Graph Based
 ```
@@ -120,7 +120,7 @@ inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>
 Example: bash run_graph.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_graph 30
 
 Run using command:
-<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankGraph" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/graphPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
+<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankGraph" --master spark://<host IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/graphPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 
 ########################################################## Cached Based
@@ -130,7 +130,7 @@ inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>
 Example: bash run_cached.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_cached 30
 
 Run using command:
-<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankCached" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/cachedPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
+<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankCached" --master spark://<host IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/cachedPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 ##########################################################  Range Based
 ```
@@ -139,7 +139,7 @@ inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>
 Example: bash run_range_partition.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_range_partition 30
 
 Run using command:
-<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankRangePartition" --master spark://<HOST_IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/rangePageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
+<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankRangePartition" --master spark://<HOST_IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/rangePageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 where `<PARTITION_NUMBER>` is any integer value.
 
