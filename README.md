@@ -37,7 +37,7 @@ The Spark Assignment for this submission has been :
 Unzip the `CS744Assignment1.tar.gz` provided by us by running :
 `tar -xvzf CS744Assignment1.tar.gz`
 
-Change Directory to `CSS744SparkApp/SparkApp` by `cd CSS744SparkApp/SparkApp` and executing:
+Change Directory to `CS744Assignment1/SparkApp` by `cd CS744Assignment1/SparkApp` and executing:
 `sbt package` which will build a new jar (Take note that it is run from CS744SparkApp directory)
 
 ### Part 1:
