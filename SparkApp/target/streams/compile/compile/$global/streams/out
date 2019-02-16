@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/users/SushmaKN/app/CS744/SampleSparkApp/src/main/scala/PageRankPartition.scala:7:17: java.io.PrintStream does not take parameters[0m
+[0m[[0m[31merror[0m] [0m[0m      System.err("Please pass three arguments for (1) Input File Directory (2) Output File Path and (3) Number Of Partitions. All files are on HDFS")[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
