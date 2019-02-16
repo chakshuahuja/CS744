@@ -5,14 +5,14 @@
 1. `Hadoop` and `Spark` are installed on machine with all required configurations (like NameNode, DataNode, Master and slaves updated)
     Verify by running `jps` that it gives the output
     ````
-    23792 Worker
-    24340 Jps
-    23511 SecondaryNameNode
-    23319 DataNode
-    24249 CoarseGrainedExecutorBackend
-    24171 SparkSubmit
-    23164 NameNode
-    23676 Master
+    Worker
+    Jps
+    SecondaryNameNode
+    DataNode
+    CoarseGrainedExecutorBackend
+    SparkSubmit
+    NameNode
+    Master
     ````
 2. `sbt` is already installed.
 If not, follow the steps below to setup the installation
@@ -57,6 +57,7 @@ Output: CSV File containing sorted(by country and timestamp) records.
     where
     - `<PATH_TO_SPARK_BIN_DIRECTORY>` is the location of Spark bin directory in your machine (would be mostly be `~/spark-2.2.0-bin-hadoop2.7/bin/`),
     - `<HOST_IP>` is the hostname of the `Master` node and you can find in your current machine by running `hostname -i` and
+    - `target/scala-2.11/samplespark_2.11-1.0.jar` is the path to jar file
     - `hdfs://<HOST_IP>:9000/export.csv` is the location of input csv file on the HDFS
     - `hdfs://<HOST_IP>:9000/dfSortDataSetResult` is the output file name (can be anything of your choice)
 
@@ -67,7 +68,7 @@ Output: CSV File containing sorted(by country and timestamp) records.
 
     Running the following command would execute the application:
     ```
-    <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortRDD" --master spark://<HOST_IP>:7077 target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/dfSortDataSetResult --driver-memory 8G --executor-memory 8G
+    <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortRDD" --master spark://<HOST_IP>:7077 target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/rddSortDataSetResult --driver-memory 8G --executor-memory 8G
     ```
 
 ### Part 3:
@@ -82,7 +83,7 @@ Output: The Output File to store the data.
 ```
 ##### Partition Based
 ```
-<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankPartition" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/partitionPageRankResult --driver-memory 8G --executor-memory 8G
+<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankPartition" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/partitionPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 ##### Graph Based
 ```
