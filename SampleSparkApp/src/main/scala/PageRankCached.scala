@@ -17,7 +17,7 @@ object PageRankCached {
     val sc = new SparkContext(conf)
 
     val nIterations = 10
-    val OnlyLeft = true // Only give rank of nodes appearing on left side
+    val OnlyLeft = false // Only give rank of nodes appearing on left side
     val IgnoreZeroIncoming = true // Only give ranks of nodes that have atleast one incoming Url
 
     if (OnlyLeft)
