@@ -1,4 +1,4 @@
-name := "SampleSpark"
+name := "PageRankApp"
 
 version := "1.0"
 
