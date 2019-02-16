@@ -1,4 +1,3 @@
-
 # Running Spark Application
 
 ##### Assumptions: 
@@ -26,7 +25,9 @@ If not, follow the steps below to setup the installation
 3. All files are assumed to be on `HDFS`. So be sure by listing files on HDFS `hdfs dfs -ls <path>`. The required files
         * `export.csv` for Simple Sort Application (Part 2) and
         * `enWikiData` directory containing the first 10 `xml` files are on hdfs
-        
+
+4. For our bash scripts, we assume that the Spark bin directory in your machine is `~/spark-2.2.0-bin-hadoop2.7/bin/`. If this is not the case, please change the command to '<PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit' in each of the bash scripts.
+
 ##### Note:
 Output files would get stored on HDFS in home directory `/`
 The Spark Assignment for this submission has been :
@@ -37,16 +38,26 @@ The Spark Assignment for this submission has been :
 Unzip the `CS744Assignment1.tar.gz` provided by us by running :
 `tar -xvzf CS744Assignment1.tar.gz`
 
-Change Directory to `CS744Assignment1/SparkApp` by `cd CS744Assignment1/SparkApp` and executing:
-`sbt package` which will build a new jar (Take note that it is run from CS744SparkApp directory)
+For part-2, SORT Change Directory to `CS744Assignment1/SortApp` by `cd CS744Assignment1/SortApp` and executing:
+`sbt package` which will build a new jar (Take note that it is run from SortApp directory)
+
+
+For part-3, PAGERANK Change Directory to `CS744Assignment1/PageRankApp` by `cd CS744Assignment1/PageRankApp` and executing:
+`sbt package` which will build a new jar (Take note that it is run from PageRankApp directory)
 
 ### Part 1:
 Hope the above steps are working fine and you are ready with the setup.
 
 ### Part 2:
 ## Sort 
+GO TO SORTAPP DIRECTORY
 * Sort using `Data Frame API` for computation:
-Code: Present in class `SortDataFrame` in the `CSS744SparkApp`
+
+Run using bash script:
+inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file, hdfs://<HOST_IP>:9000/output-directory
+Example: bash run_df.sh 128.104.223.156 hdfs://128.104.223.156:9000/export.csv hdfs://128.104.223.156:9000/sort_rdd.txt
+
+Code: Present in class `SortDataFrame` in the `SortApp`
 Input: CSV File to be sorted (assumed to be on `hdfs`)
 Output: CSV File containing sorted(by country and timestamp) records.
 
@@ -62,7 +73,12 @@ Output: CSV File containing sorted(by country and timestamp) records.
     - `hdfs://<HOST_IP>:9000/dfSortDataSetResult` is the output file name (can be anything of your choice)
 
 * To run a program that uses RDD for computation
-Code: Present in class `SortRDD` in the `CSS744SparkApp`
+
+Run using bash script:
+inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file, hdfs://<HOST_IP>:9000/output-directory
+Example: bash run_rdd.sh 128.104.223.156 hdfs://128.104.223.156:9000/export.csv hdfs://128.104.223.156:9000/sort_rdd.txt
+
+Code: Present in class `SortRDD` in the `SortApp`
 Input: CSV File to be sorted (assumed to be on `hdfs`)
 Output: CSV File containing sorted(by country and timestamp) records.
 
@@ -71,31 +87,58 @@ Output: CSV File containing sorted(by country and timestamp) records.
     <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortRDD" --master spark://<HOST_IP>:7077 target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/rddSortDataSetResult --driver-memory 8G --executor-memory 8G
     ```
 
-### Part 3:
-## PageRank
+########################################################## Part 3 ##################################################################################33
+#### PageRank
+
+GO TO PageRankApp DIRECTORY
 
 Input: Input File or Directory to be sorted (assumed to be on `hdfs`). In case, you are adding the directory path, make sure to add `hdfs://<HOST_IP>:9000/<INPUT_DIR>/*`
 Output: The Output File to store the data.
 
-##### Naive Based
+########################################################## Naive Based
 ```
+Run using bash script:
+inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory
+Example: bash run_naive.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_naive
+
+Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankNaive" --master spark://<HOST_IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<ip_address>:9000/naivePageRankResult --driver-memory 8G --executor-memory 8G
 ```
-##### Partition Based
+########################################################## Partition Based
 ```
+Run using bash script:
+inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
+Example: bash run_partition.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_partition 30
+
+Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankPartition" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/partitionPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
-##### Graph Based
+########################################################## Graph Based
 ```
+Run using bash script:
+inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
+Example: bash run_graph.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_graph 30
+
+Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankGraph" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/graphPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 
-##### Cached Based
+########################################################## Cached Based
 ```
+Run using bash script:
+inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
+Example: bash run_cached.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_cached 30
+
+Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankCached" --master spark://<host IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/cachedPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
-#####  Range Based
+##########################################################  Range Based
 ```
+Run using bash script:
+inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
+Example: bash run_range_partition.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData hdfs://128.104.223.156:9000/pr_range_partition 30
+
+Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankRangePartition" --master spark://<HOST_IP>:7077  target/scala-2.11/samplespark_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/rangePageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 where `<PARTITION_NUMBER>` is any integer value.
