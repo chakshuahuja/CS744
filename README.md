@@ -53,16 +53,17 @@ Hope the above steps are working fine and you are ready with the setup.
 GO TO SORTAPP DIRECTORY
 * Sort using `Data Frame API` for computation:
 
-Run using bash script:
-inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file, hdfs://<HOST_IP>:9000/output-directory
-Example: bash run_df.sh 128.104.223.156 hdfs://128.104.223.156:9000/export.csv hdfs://128.104.223.156:9000/sort_rdd.txt
-
 Code: Present in class `SortDataFrame` in the `SortApp`
 Input: CSV File to be sorted (assumed to be on `hdfs`)
 Output: CSV File containing sorted(by country and timestamp) records.
-
-    Running the following command would execute the application:
+    
     ```
+    Run using bash script:
+    inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file, hdfs://<HOST_IP>:9000/output-directory
+    Example: bash run_df.sh 128.104.223.156 hdfs://128.104.223.156:9000/export.csv hdfs://128.104.223.156:9000/sort_rdd.txt
+
+    Running using command:
+    
     <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortDataFrame" --master spark://<HOST_IP>:7077 target/scala-2.11/sortapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/dfSortDataSetResult --driver-memory 8G --executor-memory 8G
     ```
     where
@@ -74,16 +75,17 @@ Output: CSV File containing sorted(by country and timestamp) records.
 
 * To run a program that uses RDD for computation
 
-Run using bash script:
-inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file, hdfs://<HOST_IP>:9000/output-directory
-Example: bash run_rdd.sh 128.104.223.156 hdfs://128.104.223.156:9000/export.csv hdfs://128.104.223.156:9000/sort_rdd.txt
-
 Code: Present in class `SortRDD` in the `SortApp`
 Input: CSV File to be sorted (assumed to be on `hdfs`)
 Output: CSV File containing sorted(by country and timestamp) records.
 
-    Running the following command would execute the application:
+    
     ```
+    Run using bash script:
+    inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file, hdfs://<HOST_IP>:9000/output-directory
+    Example: bash run_rdd.sh 128.104.223.156 hdfs://128.104.223.156:9000/export.csv hdfs://128.104.223.156:9000/sort_rdd.txt
+
+    Running using command:
     <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortRDD" --master spark://<HOST_IP>:7077 target/scala-2.11/sortapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/rddSortDataSetResult --driver-memory 8G --executor-memory 8G
     ```
 
