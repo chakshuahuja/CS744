@@ -4,7 +4,7 @@ import org.apache.spark.{HashPartitioner, SparkConf, SparkContext}
 object PageRankPartition {
   def main(args: Array[String]): Unit = {
     if (args.length < 1) {
-      System.err("""Please pass three arguments for (1) Input File Directory (2) Output File Path and (3) Number Of Partitions. All files are on HDFS""")
+      println("Please pass three arguments for (1) Input File Directory (2) Output File Path and (3) Number Of Partitions. All files are on HDFS")
       System.exit(0)
     }
     PageRank(args(0), args(1), args(2).toInt)

@@ -12,7 +12,7 @@ object PageRankRangePartition {
     PageRank(args(0), args(1), args(2).toInt)
   }
 
-  def PageRank(inputFileDir: String, outputFile: String, noPartitions: Int) {\
+  def PageRank(inputFileDir: String, outputFile: String, noPartitions: Int) {
     val conf = new SparkConf()
     val sc = new SparkContext(conf)
 
