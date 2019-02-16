@@ -34,7 +34,7 @@ The Spark Assignment for this submission has been :
         *  Uses `sbt` interactive build tool to build a jar
         *  Uses `spark-submit` shell script to run spark application
 
-Unzip the `CS744Assignment1.zip` provided by us by running :
+Unzip the `CS744Assignment1.tar.gz` provided by us by running :
 `tar -xvzf CS744Assignment1.tar.gz`
 
 Change Directory to `CSS744SparkApp` by `cd CSS744SparkApp` and executing:
