@@ -5,14 +5,14 @@
 1. `Hadoop` and `Spark` are installed on machine with all required configurations (like NameNode, DataNode, Master and slaves updated)
     Verify by running `jps` that it gives the output
     ````
-    23792 Worker
-    24340 Jps
-    23511 SecondaryNameNode
-    23319 DataNode
-    24249 CoarseGrainedExecutorBackend
-    24171 SparkSubmit
-    23164 NameNode
-    23676 Master
+    Worker
+    Jps
+    SecondaryNameNode
+    DataNode
+    CoarseGrainedExecutorBackend
+    SparkSubmit
+    NameNode
+    Master
     ````
 2. `sbt` is already installed.
 If not, follow the steps below to setup the installation
