@@ -46,6 +46,7 @@ For part-3, PAGERANK Change Directory to `CS744Assignment1/PageRankApp` by `cd C
 `sbt package` which will build a new jar (Take note that it is run from PageRankApp directory)
 
 ### Part 1:
+
 Hope the above steps are working fine and you are ready with the setup.
 
 ### Part 2:
@@ -89,7 +90,7 @@ Output: CSV File containing sorted(by country and timestamp) records.
     <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "SortRDD" --master spark://<HOST_IP>:7077 target/scala-2.11/sortapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/export.csv hdfs://<HOST_IP>:9000/rddSortDataSetResult --driver-memory 8G --executor-memory 8G
     ```
 
-########################################################## Part 3 ##################################################################################33
+### Part 3:
 #### PageRank
 
 GO TO PageRankApp DIRECTORY
@@ -97,7 +98,7 @@ GO TO PageRankApp DIRECTORY
 Input: Input File or Directory to be sorted (assumed to be on `hdfs`). In case, you are adding the directory path, make sure to add `hdfs://<HOST_IP>:9000/<INPUT_DIR>/*`
 Output: The Output File to store the data.
 
-########################################################## Naive Based
+###### Naive Based
 ```
 Run using bash script:
 inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory
@@ -106,7 +107,7 @@ Example: bash run_naive.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData 
 Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankNaive" --master spark://<HOST_IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<ip_address>:9000/naivePageRankResult --driver-memory 8G --executor-memory 8G
 ```
-########################################################## Partition Based
+###### Partition Based
 ```
 Run using bash script:
 inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
@@ -115,7 +116,7 @@ Example: bash run_partition.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkD
 Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankPartition" --master spark://<host IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/partitionPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
-########################################################## Graph Based
+###### Graph Based
 ```
 Run using bash script:
 inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
@@ -125,7 +126,7 @@ Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankGraph" --master spark://<host IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/graphPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 
-########################################################## Cached Based
+###### Cached Based
 ```
 Run using bash script:
 inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
@@ -134,7 +135,7 @@ Example: bash run_cached.sh 128.104.223.156 hdfs://128.104.223.156:9000/berkData
 Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankCached" --master spark://<host IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/cachedPageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
-##########################################################  Range Based
+######  Range Based
 ```
 Run using bash script:
 inputs: master-nodeip, hdfs://<HOST_IP>:9000/input-file-or-dir, hdfs://<HOST_IP>:9000/output-directory, num_partitions
@@ -144,6 +145,8 @@ Run using command:
 <PATH_TO_SPARK_BIN_DIRECTORY>/spark-submit --class "PageRankRangePartition" --master spark://<HOST_IP>:7077  target/scala-2.11/pagerankapp_2.11-1.0.jar hdfs://<HOST_IP>:9000/<INPUT_FILE_OR_DIR> hdfs://<HOST_IP>:9000/rangePageRankResult <PARTITION_NUMBER> --driver-memory 8G --executor-memory 8G
 ```
 where `<PARTITION_NUMBER>` is any integer value.
+
+### Part 4:
 
 ##### Kill a Worker process and see the changes. You should trigger the failure to a desired worker VM when the application reaches 50% of its lifetime
 
