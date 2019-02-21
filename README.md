@@ -1,11 +1,17 @@
-### CS744
-#### Big Data Systems @ UW-Madison
+## CS744
+### Big Data Systems @ UW-Madison
 
 
 Assignment 1 :
-[Problem Set](http://pages.cs.wisc.edu/~akella/CS744/S19/assignment1_html/assignment1.html)
+==============
+[Problem Statement](http://pages.cs.wisc.edu/~akella/CS744/S19/assignment1_html/assignment1.html)
+
+[Solution](https://github.com/chakshuahuja/CS744/tree/master/Assignment%201)
+
+Technologies: Apache Spark and Scala
 
 Project 1:
+==========
 ##### System Support for Elastic ML Model Training
 
 Problem Statement :
