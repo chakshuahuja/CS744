@@ -30,12 +30,12 @@ clusterSpec_cluster = tf.train.ClusterSpec({
 
 clusterSpec_cluster2 = tf.train.ClusterSpec({
     "ps": [
-        "10.10.1.1:2222"
+        "10.10.1.1:2224"
     ],
     "worker": [
-        "10.10.1.1:2223",
-        "10.10.1.2:2222",
-        "10.10.1.3:2222"
+        "10.10.1.1:2225",
+        "10.10.1.2:2224",
+        "10.10.1.3:2224"
     ]
 })
 
