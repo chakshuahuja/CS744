@@ -64,7 +64,7 @@ if FLAGS.job_name == "ps":
     server.join()
 elif FLAGS.job_name == "worker":
     from tensorflow.examples.tutorials.mnist import input_data
-    learning_rate = 0.001
+    learning_rate = 0.01
     n_epochs = 5
     batch_size = 100
     n_features = 784

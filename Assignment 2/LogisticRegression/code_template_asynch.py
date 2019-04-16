@@ -58,7 +58,7 @@ elif FLAGS.job_name == "worker":
     with tf.device(
         tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % FLAGS.task_index, cluster=clusterinfo)):
 
-        learning_rate = 0.001
+        learning_rate = 0.01
         n_epochs = 5
         batch_size = 100
         n_features = 784
