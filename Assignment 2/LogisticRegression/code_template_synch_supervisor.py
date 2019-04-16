@@ -63,17 +63,19 @@ if FLAGS.job_name == "ps":
     server.join()
 elif FLAGS.job_name == "worker":
     from tensorflow.examples.tutorials.mnist import input_data
-
+    learning_rate = 0.001
+    n_epochs = 5
+    batch_size = 100
+    n_features = 784
+    n_classes = 10
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+    n_batches = int(mnist.train.num_examples/batch_size)
     is_chief = (FLAGS.task_index == 0)
+
     with tf.device(
         tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % FLAGS.task_index, cluster=clusterinfo)):
 
-        learning_rate = 0.001
-        n_epochs = 5
-        batch_size = 100
-        n_features = 784
-        n_classes = 10
+        
 
         x = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
         y = tf.placeholder(dtype=tf.float32, shape=[None, n_classes])
@@ -105,16 +107,6 @@ elif FLAGS.job_name == "worker":
         init = tf.global_variables_initializer()
         train_dir = tempfile.mkdtemp()
 
-
-        sv = tf.train.Supervisor(
-            is_chief=is_chief,
-            logdir=train_dir,
-            init_op=init,
-            local_init_op=local_init_op,
-            ready_for_local_init_op=ready_for_local_init_op,
-            recovery_wait_secs=1,
-            global_step=global_step)
-
         sess_config = tf.ConfigProto(
             allow_soft_placement=True,
             log_device_placement=False,
@@ -129,29 +121,28 @@ elif FLAGS.job_name == "worker":
       #       print("Worker %d: Waiting for session to be initialized..." %
       #           FLAGS.task_index)
 
-        sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
+        sync_replicas_hook = optimizer1.make_session_run_hook(is_chief)
+        stop_hook = tf.train.StopAtStepHook(last_step=n_epochs * n_batches)
+        hooks = [sync_replicas_hook]
+        sess = tf.train.MonitoredTrainingSession(master = server.target, 
+            is_chief=is_chief,
+            config=sess_config,
+            hooks=hooks,
+            stop_grace_period_secs=10)
+
 
         print("Worker %d: Session initialization complete." % FLAGS.task_index)
 
-        if is_chief:
-            # Chief worker will start the chief queue runner and call the init op.
-            sess.run(sync_init_op)
-            sv.start_queue_runners(sess, [chief_queue_runner])
+        while not sess.should_stop():
+            local_step = 0              
+            for epoch in range(n_epochs):
+                for batch in range(n_batches):
+                    batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+                    _, step =  sess.run([train_op, global_step], feed_dict={x: batch_xs, y: batch_ys})
+                    local_step += 1
+                    print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d), accuracy %f" %
+                      (str(datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
+                  #   print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
 
-        local_step = 0
-        for epoch in range(n_epochs):
-        
-            n_batches = int(mnist.train.num_examples/batch_size)
-            
-            for batch in range(n_batches):
-                batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-                _, step =  sess.run([train_op, global_step], feed_dict={x: batch_xs, y: batch_ys})
-                local_step += 1
-                print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d)" %
-                  str((datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step))
-                
-                    
-                print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
-
-            print("Epoch done:%d" %(epoch))
+                print("Epoch done:%d" %(epoch))
         print("process done")

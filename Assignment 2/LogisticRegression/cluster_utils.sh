@@ -1,5 +1,6 @@
 #!/bin/bash
 export TF_RUN_DIR="~/tf"
+export TF_LOG_DIR="~/tf/log/"
 
 function terminate_cluster() {
     echo "Terminating the servers"
@@ -30,6 +31,8 @@ function start_cluster() {
             ssh node$i "mkdir -p $TF_RUN_DIR"
 	    echo "scp into $i"
             scp $1 node$i:$TF_RUN_DIR
+          echo "ssh into $i"
+            ssh node$i "mkdir -p $TF_LOG_DIR"
         done
         echo "Starting tensorflow servers on all hosts based on the spec in $1"
         echo "The server output is logged to serverlog-i.out, where i = 0, ..., 3 are the VM numbers."
