@@ -21,7 +21,7 @@ from ..utils import misc
 net_configs = {
     'single': (attrgetter('original'),
              ['/job:worker/task:0'],
-             'grpc://localhost:2242', 1, 96),
+             'grpc://localhost:2242', 1, 5),
     'cluster': (attrgetter('distribute'),
                   ['/job:worker/task:0', '/job:worker/task:1',
                    '/job:ps/task:0'],
@@ -46,7 +46,7 @@ def evaluate(net_configname, batch_size, devices=None, target=None,
     with tf.Graph().as_default():
         if tb_dir is None:
             tb_dir = '/tmp/workspace/tflogs'
-            #tb_dir = 'alexnetLog/tflogs'
+            #tb_dir = '/alexnetLog/tflogs'
 	if train_dir is None:
             train_dir = './model'
         if benchmark_name is None:
@@ -111,7 +111,7 @@ def train(net_configname, batch_size, devices=None, target=None,
     with tf.Graph().as_default():
         if tb_dir is None:
             tb_dir = '/tmp/workspace/tflogs'
-            #tb_dir = 'alexnetLog/tflogs'
+            #tb_dir = '/alexnetLog/tflogs'
 	if train_dir is None:
             train_dir = './model'
         if benchmark_name is None:
