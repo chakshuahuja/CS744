@@ -59,11 +59,12 @@ if FLAGS.deploy_mode == "cluster2":
     REPLICAS_TO_AGGREGATE = 3
     num_workers = REPLICAS_TO_AGGREGATE
 
+print(REPLICAS_TO_AGGREGATE)
 if FLAGS.job_name == "ps":
     server.join()
 elif FLAGS.job_name == "worker":
     from tensorflow.examples.tutorials.mnist import input_data
-    learning_rate = 0.001
+    learning_rate = 0.01
     n_epochs = 5
     batch_size = 100
     n_features = 784
@@ -94,18 +95,18 @@ elif FLAGS.job_name == "worker":
         correct_prediction = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
-        train_op = optimizer1.minimize(loss, global_step=global_step)
+        train_op = optimizer1.minimize(loss, global_step=global_step, aggregation_method = tf.AggregationMethod.ADD_N)
         
-        local_init_op = optimizer1.local_step_init_op
-        if is_chief:
-            local_init_op = optimizer1.chief_init_op
+      #   local_init_op = optimizer1.local_step_init_op
+      #   if is_chief:
+      #       local_init_op = optimizer1.chief_init_op
       
-        ready_for_local_init_op = optimizer1.ready_for_local_init_op
-        chief_queue_runner = optimizer1.get_chief_queue_runner()
-        sync_init_op = optimizer1.get_init_tokens_op()
+      #   ready_for_local_init_op = optimizer1.ready_for_local_init_op
+      #   chief_queue_runner = optimizer1.get_chief_queue_runner()
+      #   sync_init_op = optimizer1.get_init_tokens_op()
 
-        init = tf.global_variables_initializer()
-        train_dir = tempfile.mkdtemp()
+      #   init = tf.global_variables_initializer()
+      #   train_dir = tempfile.mkdtemp()
 
         sess_config = tf.ConfigProto(
             allow_soft_placement=True,
@@ -121,19 +122,19 @@ elif FLAGS.job_name == "worker":
       #       print("Worker %d: Waiting for session to be initialized..." %
       #           FLAGS.task_index)
 
-        sync_replicas_hook = optimizer1.make_session_run_hook(is_chief)
+        sync_replicas_hook = optimizer1.make_session_run_hook(is_chief, num_tokens=0)
         stop_hook = tf.train.StopAtStepHook(last_step=n_epochs * n_batches)
         hooks = [sync_replicas_hook]
         sess = tf.train.MonitoredTrainingSession(master = server.target, 
             is_chief=is_chief,
             config=sess_config,
             hooks=hooks,
-            stop_grace_period_secs=10)
+            stop_grace_period_secs=1)
 
 
         print("Worker %d: Session initialization complete." % FLAGS.task_index)
 
-        while not sess.should_stop():
+        while True:
             local_step = 0              
             for epoch in range(n_epochs):
                 for batch in range(n_batches):
@@ -145,4 +146,5 @@ elif FLAGS.job_name == "worker":
                   #   print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
 
                 print("Epoch done:%d" %(epoch))
+            break
         print("process done")

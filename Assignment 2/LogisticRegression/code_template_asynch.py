@@ -30,12 +30,12 @@ clusterSpec_cluster = tf.train.ClusterSpec({
 
 clusterSpec_cluster2 = tf.train.ClusterSpec({
     "ps": [
-        "10.10.1.1:2222"
+        "10.10.1.1:2224"
     ],
     "worker": [
-        "10.10.1.1:2223",
-        "10.10.1.2:2222",
-        "10.10.1.3:2222"
+        "10.10.1.1:2225",
+        "10.10.1.2:2224",
+        "10.10.1.3:2224"
     ]
 })
 
@@ -58,7 +58,7 @@ elif FLAGS.job_name == "worker":
     with tf.device(
         tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % FLAGS.task_index, cluster=clusterinfo)):
 
-        learning_rate = 0.001
+        learning_rate = 0.01
         n_epochs = 5
         batch_size = 100
         n_features = 784

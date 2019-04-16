@@ -69,7 +69,7 @@ elif FLAGS.job_name == "worker":
     with tf.device(
         tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % FLAGS.task_index, cluster=clusterinfo)):
 
-        learning_rate = 0.001
+        learning_rate = 0.01
         n_epochs = 5
         batch_size = 100
         n_features = 784
@@ -147,11 +147,11 @@ elif FLAGS.job_name == "worker":
                 batch_xs, batch_ys = mnist.train.next_batch(batch_size)
                 _, step =  sess.run([train_op, global_step], feed_dict={x: batch_xs, y: batch_ys})
                 local_step += 1
-                print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d)" %
-                  str((datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step))
+                print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d), accuracy %f" %
+                  (str(datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
                 
                     
-                print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
+            #     print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
 
             print("Epoch done:%d" %(epoch))
         print("process done")
