@@ -21,17 +21,17 @@ from ..utils import misc
 net_configs = {
     'single': (attrgetter('original'),
              ['/job:worker/task:0'],
-             'grpc://localhost:2222', 1, 96),
+             'grpc://localhost:2242', 1, 96),
     'cluster': (attrgetter('distribute'),
                   ['/job:worker/task:0', '/job:worker/task:1',
                    '/job:ps/task:0'],
-                  'grpc://localhost:2222',
+                  'grpc://localhost:2242',
                   2, 48),
     'cluster2': (attrgetter('distribute'),
                   ['/job:worker/task:0', '/job:worker/task:1',
                    '/job:worker/task:2',
                    '/job:ps/task:0'],
-                  'grpc://localhost:2222',
+                  'grpc://localhost:2242',
                   3, 32)
 }
 
@@ -46,7 +46,8 @@ def evaluate(net_configname, batch_size, devices=None, target=None,
     with tf.Graph().as_default():
         if tb_dir is None:
             tb_dir = '/tmp/workspace/tflogs'
-        if train_dir is None:
+            #tb_dir = 'alexnetLog/tflogs'
+	if train_dir is None:
             train_dir = './model'
         if benchmark_name is None:
             benchmark_name = 'fake_data'
@@ -110,7 +111,8 @@ def train(net_configname, batch_size, devices=None, target=None,
     with tf.Graph().as_default():
         if tb_dir is None:
             tb_dir = '/tmp/workspace/tflogs'
-        if train_dir is None:
+            #tb_dir = 'alexnetLog/tflogs'
+	if train_dir is None:
             train_dir = './model'
         if benchmark_name is None:
             benchmark_name = 'fake_data'
