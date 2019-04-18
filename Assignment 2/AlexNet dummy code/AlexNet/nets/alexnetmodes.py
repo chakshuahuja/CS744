@@ -11,6 +11,8 @@ from ..optimizers.momentumhybrid import HybridMomentumOptimizer
 
 def original(images, labels, num_classes, total_num_examples, devices=None, is_train=True):
     """Build inference"""
+    print("Inside Original")
+    print(devices)
     if devices is None:
         devices = [None]
 
@@ -45,7 +47,7 @@ def original(images, labels, num_classes, total_num_examples, devices=None, is_t
 
         with tf.control_dependencies([apply_gradient_op]):
             return tf.no_op(name='train')
-
+    print("************* devides: ", devices)
     with tf.device(devices[0]):
         builder = ModelBuilder()
 	print('num_classes: ' + str(num_classes))
@@ -61,7 +63,7 @@ def original(images, labels, num_classes, total_num_examples, devices=None, is_t
 
 
 def distribute(images, labels, num_classes, total_num_examples, devices, is_train=True):
-    pass #placeholder
+    # pass #placeholder
 
     # Put your code here
     # You can refer to the "original" function above, it is for the single-node version.
@@ -73,3 +75,53 @@ def distribute(images, labels, num_classes, total_num_examples, devices, is_trai
     #    read how TensorFlow Variables work, and considering using tf.variable_scope.
     # 5. On the parameter server node, apply gradients.
     # 6. return required values.
+
+    if devices is None:
+        devices = [None]
+
+    def configure_optimizer(global_step, total_num_steps):
+        """Return a configured optimizer"""
+        def exp_decay(start, tgtFactor, num_stairs):
+            decay_step = total_num_steps / (num_stairs - 1)
+            decay_rate = (1 / tgtFactor) ** (1 / (num_stairs - 1))
+            return tf.train.exponential_decay(start, global_step, decay_step, decay_rate,
+                                              staircase=True)
+
+        def lparam(learning_rate, momentum):
+            return {
+                'learning_rate': learning_rate,
+                'momentum': momentum
+            }
+
+        return HybridMomentumOptimizer({
+            'weights': lparam(exp_decay(0.001, 250, 4), 0.9),
+            'biases': lparam(exp_decay(0.002, 10, 2), 0.9),
+        })
+    
+    builder = ModelBuilder(devices[-1])       
+    global_step = builder.ensure_global_step()
+
+    opt = configure_optimizer(global_step, total_num_examples)
+
+    images_split = tf.split(images, num_or_size_splits=len(devices)-1)
+    labels_split = tf.split(labels, num_or_size_splits=len(devices)-1)
+ 
+    worker_gradients = []
+    with tf.variable_scope(tf.get_variable_scope(), reuse = tf.AUTO_REUSE):
+	for index,worker_device in enumerate(devices[:-1]):
+            with tf.device(worker_device):
+                print('num_classes: ' + str(num_classes))
+                net, logits, total_loss = alexnet_inference(builder, images_split[index], labels_split[index], num_classes)
+
+                if not is_train:
+                      return alexnet_eval(net, labels_split[index])
+                worker_gradients.append(opt.compute_gradients(total_loss)) 
+
+    total_gradient = builder.average_gradients(worker_gradients)
+    gradient_op = opt.apply_gradients(total_gradient, global_step=global_step)
+    
+    train_op = tf.group(gradient_op)
+    #with tf.control_dependencies([gradient_op]):
+        #train_op = tf.no_op(name='HybridMomentum')
+
+    return net, logits, total_loss, train_op, global_step
