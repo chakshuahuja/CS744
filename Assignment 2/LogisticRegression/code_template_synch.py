@@ -132,6 +132,10 @@ elif FLAGS.job_name == "worker":
         sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
 
         print("Worker %d: Session initialization complete." % FLAGS.task_index)
+        n_workers = len(vars(clusterinfo)['_cluster_spec']['worker'])
+        num_curr_examples = (mnist.train.num_examples / n_workers)
+        print('Number of Workers: ', n_workers)
+        print('Current shrad size: ', num_curr_examples)
 
         if is_chief:
             # Chief worker will start the chief queue runner and call the init op.
@@ -144,6 +148,9 @@ elif FLAGS.job_name == "worker":
             n_batches = int(mnist.train.num_examples/batch_size)
             
             for batch in range(n_batches):
+                if batch % n_workers != FLAGS.task_index:
+                    print('skipping this batch ', batch)
+                    continue
                 batch_xs, batch_ys = mnist.train.next_batch(batch_size)
                 _, step =  sess.run([train_op, global_step], feed_dict={x: batch_xs, y: batch_ys})
                 local_step += 1
