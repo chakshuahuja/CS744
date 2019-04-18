@@ -82,6 +82,11 @@ elif FLAGS.job_name == "worker":
         optimizer = tf.train.GradientDescentOptimizer
         train_op = optimizer(learning_rate=learning_rate).minimize(loss)
 
+        n_workers = len(vars(clusterinfo)['_cluster_spec']['worker'])
+        num_curr_examples = (mnist.train.num_examples / n_workers)
+        print('Number of Workers: ', n_workers)
+        print('Current shrad size: ', num_curr_examples)
+
     init = tf.initialize_all_variables()
     with tf.Session(server.target) as sess:
 
@@ -91,6 +96,9 @@ elif FLAGS.job_name == "worker":
             n_batches = int(mnist.train.num_examples/batch_size)
 
             for batch in range(n_batches):
+                if batch % n_workers != FLAGS.task_index:
+                    print('skipping this batch ', batch)
+                    continue
                 batch_xs, batch_ys = mnist.train.next_batch(batch_size)
                 _, merged_summary = sess.run([train_op, tf_summary], feed_dict={x: batch_xs, y: batch_ys})    
                 print("At time %s, epoch %d, batch %d, accuracy %f" %(str(datetime.datetime.now()),epoch,batch,sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
