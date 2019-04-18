@@ -103,18 +103,18 @@ def distribute(images, labels, num_classes, total_num_examples, devices, is_trai
 
     opt = configure_optimizer(global_step, total_num_examples)
 
-    images_split = tf.split(images, num_or_size_splits=len(devices)-1)
-    labels_split = tf.split(labels, num_or_size_splits=len(devices)-1)
+    image_tensors_split = tf.split(images, num_or_size_splits=len(devices)-1)
+    label_tensors_split = tf.split(labels, num_or_size_splits=len(devices)-1)
  
     worker_gradients = []
     with tf.variable_scope(tf.get_variable_scope(), reuse = tf.AUTO_REUSE):
 	for index,worker_device in enumerate(devices[:-1]):
             with tf.device(worker_device):
                 print('num_classes: ' + str(num_classes))
-                net, logits, total_loss = alexnet_inference(builder, images_split[index], labels_split[index], num_classes)
+                net, logits, total_loss = alexnet_inference(builder, image_tensors_split[index], label_tensors_split[index], num_classes)
 
                 if not is_train:
-                      return alexnet_eval(net, labels_split[index])
+                      return alexnet_eval(net, label_tensors_split[index])
                 worker_gradients.append(opt.compute_gradients(total_loss)) 
 
     total_gradient = builder.average_gradients(worker_gradients)
