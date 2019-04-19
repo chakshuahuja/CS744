@@ -34,19 +34,19 @@ function start_cluster() {
           echo "ssh into $i"
             ssh node$i "mkdir -p $TF_LOG_DIR"
         done
-        echo "Starting tensorflow servers on all hosts based on the spec in $1"
+        echo "Starting tensorflow servers on all hosts based on the spec in $1 $2 $3 $4 $5"
         echo "The server output is logged to serverlog-i.out, where i = 0, ..., 3 are the VM numbers."
         if [ "$2" = "single" ]; then
-            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=single" > serverlog-0.out 2>&1&
+            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=single --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-0.out 2>&1&
         elif [ "$2" = "cluster" ]; then
-            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster  --job_name=ps" > serverlog-ps-0.out 2>&1&
-            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster  --task_index=0" > serverlog-0.out 2>&1&
-            nohup ssh node1 "cd ~/tf ; python $1 --deploy_mode=cluster  --task_index=1" > serverlog-1.out 2>&1&
+            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster  --job_name=ps --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-ps-0.out 2>&1&
+            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster  --task_index=0  --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-0.out 2>&1&
+            nohup ssh node1 "cd ~/tf ; python $1 --deploy_mode=cluster  --task_index=1  --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-1.out 2>&1&
         else
-            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster2  --job_name=ps" > serverlog-ps-0.out 2>&1&
-            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster2  --task_index=0" > serverlog-0.out 2>&1&
-            nohup ssh node1 "cd ~/tf ; python $1 --deploy_mode=cluster2  --task_index=1" > serverlog-1.out 2>&1&
-            nohup ssh node2 "cd ~/tf ; python $1 --deploy_mode=cluster2  --task_index=2" > serverlog-2.out 2>&1&
+            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster2  --job_name=ps  --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-ps-0.out 2>&1&
+            nohup ssh node0 "cd ~/tf ; python $1 --deploy_mode=cluster2  --task_index=0 --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-0.out 2>&1&
+            nohup ssh node1 "cd ~/tf ; python $1 --deploy_mode=cluster2  --task_index=1 --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-1.out 2>&1&
+            nohup ssh node2 "cd ~/tf ; python $1 --deploy_mode=cluster2  --task_index=2 --batch_size=$3 --n_epochs=$4 --learning_rate=$5" > serverlog-2.out 2>&1&
         fi
     fi
 }

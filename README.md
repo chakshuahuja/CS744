@@ -10,6 +10,14 @@ Assignment 1 :
 
 Technologies: Apache Spark and Scala
 
+Assignment 2 :
+==============
+[Problem Statement](http://pages.cs.wisc.edu/~akella/CS744/S19/assignment2_html/assignment2.html)
+
+[Solution](https://github.com/chakshuahuja/CS744/tree/master/Assignment%202)
+
+Technologies: TensorFlow and AlexNet
+
 Project 1:
 ==========
 ##### System Support for Elastic ML Model Training

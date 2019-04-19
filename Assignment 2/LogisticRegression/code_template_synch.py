@@ -9,6 +9,10 @@ import datetime
 tf.app.flags.DEFINE_integer("task_index", 0, "Index of task with in the job.")
 tf.app.flags.DEFINE_string("job_name", "worker", "either worker or ps")
 tf.app.flags.DEFINE_string("deploy_mode", "single", "either single or cluster")
+tf.app.flags.DEFINE_string("batch_size", "100", "either single or cluster")
+tf.app.flags.DEFINE_string("n_epochs", "6", "either single or cluster")
+tf.app.flags.DEFINE_string("learning_rate", "0.01", "either single or cluster")
+
 FLAGS = tf.app.flags.FLAGS
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
@@ -69,9 +73,9 @@ elif FLAGS.job_name == "worker":
     with tf.device(
         tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % FLAGS.task_index, cluster=clusterinfo)):
 
-        learning_rate = 0.01
-        n_epochs = 5
-        batch_size = 100
+        batch_size = int(FLAGS.batch_size)
+        learning_rate = float(FLAGS.learning_rate)
+        n_epochs = int(FLAGS.n_epochs)
         n_features = 784
         n_classes = 10
 
@@ -91,7 +95,10 @@ elif FLAGS.job_name == "worker":
 
         correct_prediction = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-
+      #   tf.summary.histogram("prediction", prediction)
+      #   tf.summary.scalar("loss", loss)
+      #   tf.summary.scalar("accuracy", accuracy)
+      #   tf_summary = tf.summary.merge_all()
         train_op = optimizer1.minimize(loss, global_step=global_step)
         
         local_init_op = optimizer1.local_step_init_op
@@ -132,26 +139,41 @@ elif FLAGS.job_name == "worker":
         sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
 
         print("Worker %d: Session initialization complete." % FLAGS.task_index)
+        n_workers = len(vars(clusterinfo)['_cluster_spec']['worker'])
+        num_curr_examples = (mnist.train.num_examples / n_workers)
+        print('Number of Workers: ', n_workers)
+        print('Current shrad size: ', num_curr_examples)
 
         if is_chief:
             # Chief worker will start the chief queue runner and call the init op.
             sess.run(sync_init_op)
             sv.start_queue_runners(sess, [chief_queue_runner])
-
+      #   train_writer = tf.summary.FileWriter("log/synch_%s" %(FLAGS.deploy_mode) , sess.graph)
         local_step = 0
+        start_time = datetime.datetime.now()
         for epoch in range(n_epochs):
         
             n_batches = int(mnist.train.num_examples/batch_size)
             
             for batch in range(n_batches):
+                #if batch % n_workers != FLAGS.task_index:
+                #    print('skipping this batch ', batch)
+                #    continue
                 batch_xs, batch_ys = mnist.train.next_batch(batch_size)
                 _, step =  sess.run([train_op, global_step], feed_dict={x: batch_xs, y: batch_ys})
                 local_step += 1
-                print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d), accuracy %f" %
-                  (str(datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
-                
+            if step >= n_epochs*n_batches:
+                break
+
+            #     train_writer.add_summary(merged_summary, n_batches*epoch + batch)
+            #     print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d), accuracy %f" %
+                  # (str(datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
+            current_time = datetime.datetime.now()
+            print("Epoch done:%d, accuracy: %s, time: %s" %(epoch, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}), str((current_time-start_time).total_seconds())))    
                     
             #     print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
 
-            print("Epoch done:%d" %(epoch))
+            
+        end_time = datetime.datetime.now()
+        print("Total_time_taken:%s" %(str((end_time-start_time).total_seconds())))
         print("process done")
