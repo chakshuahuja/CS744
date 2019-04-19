@@ -3,3 +3,4 @@ SampleSparkApp/derby.log
 SampleSparkApp/project/
 SampleSparkApp/metastore_db/
 SampleSparkApp/target
+*.out
