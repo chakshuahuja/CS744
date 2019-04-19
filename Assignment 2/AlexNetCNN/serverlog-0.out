@@ -1,12 +1,7 @@
 nohup: ignoring input
-2019-04-18 09:31:21.962018: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 AVX512F FMA
-2019-04-18 09:31:21.990309: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2194840000 Hz
-2019-04-18 09:31:21.993550: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x421c780 executing computations on platform Host. Devices:
-2019-04-18 09:31:21.993588: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): <undefined>, <undefined>
-2019-04-18 09:31:21.996429: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:252] Initialize GrpcChannelCache for job ps -> {0 -> node0:2243}
-2019-04-18 09:31:21.996461: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:252] Initialize GrpcChannelCache for job worker -> {0 -> localhost:2242, 1 -> node1:2242, 2 -> node2:2242}
-2019-04-18 09:31:22.000875: I tensorflow/core/distributed_runtime/rpc/grpc_server_lib.cc:391] Started server with target: grpc://localhost:2242
-2019-04-18 09:32:09.697248: I tensorflow/core/distributed_runtime/master_session.cc:1192] Start master session 3ee487ac2760db0b with config: allow_soft_placement: true
-2019-04-18 09:32:27.090487: I tensorflow/core/distributed_runtime/master_session.cc:1192] Start master session 8ea7e675cf4203d3 with config: allow_soft_placement: true
-2019-04-18 09:32:54.076225: I tensorflow/core/distributed_runtime/master_session.cc:1192] Start master session 33fbaeee8dbd1d79 with config: allow_soft_placement: true
-2019-04-18 09:52:41.133252: I tensorflow/core/distributed_runtime/master_session.cc:1192] Start master session 81cbc0fe63e4591d with config: allow_soft_placement: true
+2019-04-18 19:13:56.241006: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 AVX512F FMA
+2019-04-18 19:13:56.269076: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2194840000 Hz
+2019-04-18 19:13:56.272512: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x3dd1c50 executing computations on platform Host. Devices:
+2019-04-18 19:13:56.272551: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): <undefined>, <undefined>
+2019-04-18 19:13:56.275404: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:252] Initialize GrpcChannelCache for job worker -> {0 -> localhost:2242}
+2019-04-18 19:13:56.280071: I tensorflow/core/distributed_runtime/rpc/grpc_server_lib.cc:391] Started server with target: grpc://localhost:2242

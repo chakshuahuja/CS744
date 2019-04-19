@@ -97,6 +97,9 @@ def distribute(images, labels, num_classes, total_num_examples, devices, is_trai
             'weights': lparam(exp_decay(0.001, 250, 4), 0.9),
             'biases': lparam(exp_decay(0.002, 10, 2), 0.9),
         })
+
+    if not is_train:
+	return alexnet_eval(net, label_tensors_split[index])
     
     builder = ModelBuilder(devices[-1])       
     global_step = builder.ensure_global_step()
@@ -112,9 +115,6 @@ def distribute(images, labels, num_classes, total_num_examples, devices, is_trai
             with tf.device(worker_device):
                 print('num_classes: ' + str(num_classes))
                 net, logits, total_loss = alexnet_inference(builder, image_tensors_split[index], label_tensors_split[index], num_classes)
-
-                if not is_train:
-                      return alexnet_eval(net, label_tensors_split[index])
                 worker_gradients.append(opt.compute_gradients(total_loss)) 
 
     total_gradient = builder.average_gradients(worker_gradients)
