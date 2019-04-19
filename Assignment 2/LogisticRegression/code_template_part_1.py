@@ -3,11 +3,15 @@ import os
 import numpy as np
 import time
 import datetime
+import sys
 
 # define the command line flags that can be sent
 tf.app.flags.DEFINE_integer("task_index", 0, "Index of task with in the job.")
 tf.app.flags.DEFINE_string("job_name", "worker", "either worker or ps")
 tf.app.flags.DEFINE_string("deploy_mode", "single", "either single or cluster")
+tf.app.flags.DEFINE_string("batch_size", "100", "either single or cluster")
+tf.app.flags.DEFINE_string("n_epochs", "6", "either single or cluster")
+tf.app.flags.DEFINE_string("learning_rate", "0.01", "either single or cluster")
 FLAGS = tf.app.flags.FLAGS
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
@@ -27,7 +31,7 @@ def variable_summaries(var):
 
 clusterSpec_single = tf.train.ClusterSpec({
     "worker" : [
-        "localhost:2222"
+        "localhost:2232"
     ]
 })
 
@@ -66,10 +70,13 @@ if FLAGS.job_name == "ps":
 elif FLAGS.job_name == "worker":
 	from tensorflow.examples.tutorials.mnist import input_data
 	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-
-	learning_rate = 0.01
-	n_epochs = 5
-	batch_size = 100
+	print(FLAGS.learning_rate)
+      
+	# learning_rate = float(FLAGS.learning_rate)
+	batch_size = int(FLAGS.batch_size)
+	learning_rate = float(FLAGS.learning_rate)
+	n_epochs = int(FLAGS.n_epochs)
+	
 	n_features = 784
 	n_classes = 10
 
@@ -98,16 +105,20 @@ elif FLAGS.job_name == "worker":
 	init = tf.initialize_all_variables()
 	sess = tf.Session()
 	sess.run(init)
-	train_writer = tf.summary.FileWriter("log/%s" %(FLAGS.deploy_mode) , sess.graph)
+	train_writer = tf.summary.FileWriter("log/part1_%s" %(FLAGS.deploy_mode) , sess.graph)
 	n_batches = int(mnist.train.num_examples/batch_size)
 	print("n_batches %d" %(n_batches))
+	start_time = datetime.datetime.now()
 	for epoch in range(n_epochs):    
 		for batch in range(n_batches):
 			batch_xs, batch_ys = mnist.train.next_batch(100)
 			_, merged_summary= sess.run([optimizer_f, tf_summary], feed_dict={x: batch_xs, y: batch_ys}) 
-			print("At time %s, epoch %d, batch %d, accuracy %f" %(str(datetime.datetime.now()),epoch,batch,sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
+			# print("At time %s, epoch %d, batch %d" %(str(datetime.datetime.now()),epoch,batch))
 			train_writer.add_summary(merged_summary, n_batches*epoch + batch)
-		print("Epoch done:%d" %(epoch))
+		current_time = datetime.datetime.now()
+		print("Epoch done:%d, accuracy: %s, time: %s" %(epoch, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}), str((current_time-start_time).total_seconds())))
+	end_time = datetime.datetime.now()
+	print("Total_time_taken:%s" %(str((end_time-start_time).total_seconds())))
 	print("process done")
 
 
