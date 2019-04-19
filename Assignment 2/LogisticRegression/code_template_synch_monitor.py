@@ -146,7 +146,7 @@ elif FLAGS.job_name == "worker":
             for epoch in range(n_epochs):
                 for batch in range((n_batches / n_workers)*n_workers):
                     if batch % n_workers != FLAGS.task_index:
-                         print('skipping this batch ', batch)
+                         #print('skipping this batch ', batch)
                          continue
                     batch_xs, batch_ys = mnist.train.next_batch(batch_size)
                     _, step =  sess.run([train_op, global_step], feed_dict={x: batch_xs, y: batch_ys})
