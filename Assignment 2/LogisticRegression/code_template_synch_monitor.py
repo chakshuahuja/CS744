@@ -24,11 +24,11 @@ clusterSpec_single = tf.train.ClusterSpec({
 
 clusterSpec_cluster = tf.train.ClusterSpec({
     "ps": [
-        "10.10.1.1:2222"
+        "10.10.1.1:2262"
     ],
     "worker": [
-        "10.10.1.1:2223",
-        "10.10.1.2:2222"
+        "10.10.1.1:2263",
+        "10.10.1.2:2262"
     ]
 })
 
@@ -75,7 +75,7 @@ elif FLAGS.job_name == "worker":
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
     n_batches = int(mnist.train.num_examples/batch_size)
     is_chief = (FLAGS.task_index == 0)
-
+    print(type(mnist.train))  
     with tf.device(
         tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % FLAGS.task_index, cluster=clusterinfo)):
 
@@ -144,16 +144,15 @@ elif FLAGS.job_name == "worker":
         while True:
             local_step = 0              
             for epoch in range(n_epochs):
-                for batch in range(n_batches):
-                    #if batch % n_workers != FLAGS.task_index:
-                        # print('skipping this batch ', batch)
-                    #    continue
+                for batch in range((n_batches / n_workers)*n_workers):
+                    if batch % n_workers != FLAGS.task_index:
+                         print('skipping this batch ', batch)
+                         continue
                     batch_xs, batch_ys = mnist.train.next_batch(batch_size)
                     _, step =  sess.run([train_op, global_step], feed_dict={x: batch_xs, y: batch_ys})
                     local_step += 1
-                    print(batch)
-                  #   print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d), accuracy %f" %
-                  #     (str(datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
+                  #  print("At time: %s: Worker %d: training step %d, epoch %d, batch %d, (global step: %d), accuracy %f" %
+                  #    (str(datetime.datetime.now()), FLAGS.task_index, local_step, epoch, batch, step, sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})))
                   #   print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
 
                 current_time = datetime.datetime.now()
