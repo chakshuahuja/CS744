@@ -17,11 +17,12 @@ from ..nets import alexnetmodes
 from ..utils import tfhelper
 from ..utils import misc
 
+tf.logging.set_verbosity(tf.logging.DEBUG)
 
 net_configs = {
     'single': (attrgetter('original'),
              ['/job:worker/task:0'],
-             'grpc://localhost:2242', 1, 5),
+             'grpc://localhost:2242', 1, 96),
     'cluster': (attrgetter('distribute'),
                   ['/job:worker/task:0', '/job:worker/task:1',
                    '/job:ps/task:0'],
@@ -108,7 +109,7 @@ def evaluate(net_configname, batch_size, devices=None, target=None,
 
 def train(net_configname, batch_size, devices=None, target=None,
           batch_num=None, tb_dir=None, train_dir=None, benchmark_name=None):
-    with tf.Graph().as_default():
+     with tf.Graph().as_default():
         if tb_dir is None:
             tb_dir = '/tmp/workspace/tflogs'
             #tb_dir = '/alexnetLog/tflogs'
@@ -164,6 +165,7 @@ def train(net_configname, batch_size, devices=None, target=None,
             summary_writer = tf.summary.FileWriter(tb_dir, sess.graph)
 
             speeds = []
+	    execution_time = []
             for step in range(batch_num):
                 if coord.should_stop():
                     break
@@ -190,6 +192,7 @@ def train(net_configname, batch_size, devices=None, target=None,
                 sec_per_batch = float(duration)
 
                 speeds.append(examples_per_sec)
+		execution_time.append(sec_per_batch)
 
                 format_str = ('%s: step %d, loss = %.2f (%.1f examples/sec; %.3f '
                               'sec/batch)')
@@ -209,6 +212,7 @@ def train(net_configname, batch_size, devices=None, target=None,
             coord.join(queue_threads)
 
             print('Average %.1f examples/sec' % np.average(speeds))
+	    print('Average %.2f execution time' % np.average(execution_time))
 
 
 if __name__ == '__main__':
