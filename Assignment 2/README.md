@@ -59,13 +59,13 @@ Change to `AlexNetCNN` directory
 Code: Present in file `alexnetmodes.py` in the `AlexNet/nets/` directory
 First run the servers using bash script:
 ```
-	./startservers.sh <DEPLOY_MODE>
+    ./startservers.sh <DEPLOY_MODE>
 ```
 where deploy mode could be `single`, `cluster` or  `cluster2`
     
 Run the program using the command:
 ```
-	python -m AlexNet.scripts.train --mode cluster --batch_size 128
+    python -m AlexNet.scripts.train --mode cluster --batch_size 128
 ```
 Ensure that the <DEPLOY_MODE> in starting the tensorflow service is same as while running the job.
 
@@ -77,7 +77,7 @@ For task 1, we run it using the deploy mode as `cluster`.
 
 Run the program using the command:
 ```
-	python -m AlexNet.scripts.train --mode <DEPLOY_MODE> --batch_size <BATCH_SIZE>
+    python -m AlexNet.scripts.train --mode <DEPLOY_MODE> --batch_size <BATCH_SIZE>
 ```
 where you can change `<DEPLOY_MODE>` to `cluster` (Cluster of 2 workers) or `cluster2` (Cluster of 3 workers) for the comparison.
 
