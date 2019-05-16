@@ -1,6 +1,11 @@
 ## CS744
 ### Big Data Systems @ UW-Madison
 
+#### Team Members
+
+    Chakshu Ahuja - cahuja2@wisc.edu
+    Sushma Kudlur Nirvanappa - kudlurnirvan@wisc.edu
+    Vibhor Goel - vgoel5@wisc.edu
 
 Assignment 1 :
 ==============
